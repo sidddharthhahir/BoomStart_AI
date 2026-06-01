@@ -1,9 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkoutPlan } from "@/components/WorkoutPlan";
 import { WorkoutLogger } from "@/components/WorkoutLogger";
-import { ExerciseFormChecker } from "@/components/ExerciseFormChecker";
 import { OnboardingData } from "@/components/OnboardingForm";
-import { Dumbbell, ClipboardList, Video } from "lucide-react";
+import { Dumbbell, ClipboardList } from "lucide-react";
 
 interface WorkoutsPageProps {
   userData: OnboardingData;
@@ -16,12 +15,12 @@ export const WorkoutsPage = ({ userData, userId }: WorkoutsPageProps) => {
       <div>
         <h2 className="text-3xl font-bold mb-2">Workouts</h2>
         <p className="text-muted-foreground">
-          Your personalized workout plan, logging, and form checking.
+          Your personalized workout plan and logging.
         </p>
       </div>
 
       <Tabs defaultValue="plan" className="space-y-6">
-        <TabsList className="grid w-full max-w-md grid-cols-3">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
           <TabsTrigger value="plan" className="flex items-center gap-2">
             <Dumbbell className="w-4 h-4" />
             <span className="hidden sm:inline">Plan</span>
@@ -29,10 +28,6 @@ export const WorkoutsPage = ({ userData, userId }: WorkoutsPageProps) => {
           <TabsTrigger value="log" className="flex items-center gap-2">
             <ClipboardList className="w-4 h-4" />
             <span className="hidden sm:inline">Log</span>
-          </TabsTrigger>
-          <TabsTrigger value="form" className="flex items-center gap-2">
-            <Video className="w-4 h-4" />
-            <span className="hidden sm:inline">Form</span>
           </TabsTrigger>
         </TabsList>
 
@@ -42,10 +37,6 @@ export const WorkoutsPage = ({ userData, userId }: WorkoutsPageProps) => {
 
         <TabsContent value="log">
           <WorkoutLogger userId={userId} />
-        </TabsContent>
-
-        <TabsContent value="form">
-          <ExerciseFormChecker />
         </TabsContent>
       </Tabs>
     </div>
