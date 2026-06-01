@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Timer, Plus, Pencil, Trash2, PartyPopper, Clock, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { format, differenceInSeconds, addYears, setYear } from "date-fns";
 
 interface Countdown {

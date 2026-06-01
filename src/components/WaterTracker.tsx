@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Droplets, Plus, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { format } from "date-fns";
 
 interface WaterTrackerProps {
@@ -18,7 +18,7 @@ const QUICK_AMOUNTS = [250, 500, 750, 1000];
 export const WaterTracker = ({ userId, todayTotal, dailyGoal, onLog }: WaterTrackerProps) => {
   const [amount, setAmount] = useState(250);
   const [isLogging, setIsLogging] = useState(false);
-  const { toast } = useToast();
+  
 
   const handleLog = async () => {
     setIsLogging(true);
@@ -31,18 +31,13 @@ export const WaterTracker = ({ userId, todayTotal, dailyGoal, onLog }: WaterTrac
 
       if (error) throw error;
 
-      toast({
-        title: "Water logged! 💧",
+      toast.success("Water logged! 💧", {
         description: `Added ${amount}ml to your daily intake`,
       });
       onLog();
     } catch (error) {
       console.error("Error logging water:", error);
-      toast({
-        title: "Error",
-        description: "Failed to log water intake",
-        variant: "destructive",
-      });
+      toast.error("Failed to log water intake");
     } finally {
       setIsLogging(false);
     }

@@ -6,13 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Loader2, Dumbbell } from "lucide-react";
 import { authSchema } from "@/lib/validationSchemas";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -62,16 +61,11 @@ const Auth = () => {
 
       if (error) throw error;
 
-      toast({
-        title: "Account created!",
+      toast.success("Account created!", {
         description: "You can now sign in with your credentials.",
       });
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Sign up failed",
-        description: error.message,
-      });
+      toast.error("Sign up failed", { description: error.message });
     } finally {
       setIsLoading(false);
     }
@@ -94,11 +88,7 @@ const Auth = () => {
 
       navigate("/");
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Sign in failed",
-        description: error.message,
-      });
+      toast.error("Sign in failed", { description: error.message });
     } finally {
       setIsLoading(false);
     }
