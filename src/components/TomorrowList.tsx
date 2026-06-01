@@ -8,7 +8,7 @@ import {
   Loader2, CloudMoon, Sunrise, Trash2, ChevronDown, ChevronUp
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { format, addDays, subDays } from "date-fns";
 
 interface TomorrowListProps {
@@ -40,8 +40,6 @@ export const TomorrowList = ({ userId, sleepQuality, mood }: TomorrowListProps) 
   const [isSaving, setIsSaving] = useState(false);
   const [weeklyInsight, setWeeklyInsight] = useState<WeeklyInsight | null>(null);
   const [showAddSection, setShowAddSection] = useState(true);
-  const { toast } = useToast();
-
   const today = format(new Date(), "yyyy-MM-dd");
   const tomorrow = format(addDays(new Date(), 1), "yyyy-MM-dd");
 
@@ -154,20 +152,13 @@ export const TomorrowList = ({ userId, sleepQuality, mood }: TomorrowListProps) 
 
       if (error) throw error;
 
-      toast({
-        title: "Tasks saved for tomorrow 🌙",
-        description: "Rest easy — your mind is clear now.",
-      });
+      toast.success("Tasks saved for tomorrow 🌙", { description: "Rest easy — your mind is clear now." });
 
       setTasks([""]);
       fetchTasks();
     } catch (error) {
       console.error("Error saving tasks:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save tasks",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to save tasks" });
     } finally {
       setIsSaving(false);
     }
@@ -187,7 +178,7 @@ export const TomorrowList = ({ userId, sleepQuality, mood }: TomorrowListProps) 
       );
 
       if (newStatus === "done") {
-        toast({ title: "Done ✨", description: "Nice work." });
+        toast.success("Done ✨", { description: "Nice work." });
       } else if (newStatus === "moved") {
         const task = todayTasks.find(t => t.id === taskId);
         if (task) {
@@ -199,7 +190,7 @@ export const TomorrowList = ({ userId, sleepQuality, mood }: TomorrowListProps) 
           });
           fetchTasks();
         }
-        toast({ title: "Moved to tomorrow", description: "No rush." });
+        toast.success("Moved to tomorrow", { description: "No rush." });
       }
     } catch (error) {
       console.error("Error updating task:", error);
@@ -232,7 +223,7 @@ export const TomorrowList = ({ userId, sleepQuality, mood }: TomorrowListProps) 
       if (error) throw error;
       
       setTomorrowTasks(prev => prev.filter(t => t.id !== taskId));
-      toast({ title: "Task removed" });
+      toast.success("Task removed");
     } catch (error) {
       console.error("Error deleting task:", error);
     }

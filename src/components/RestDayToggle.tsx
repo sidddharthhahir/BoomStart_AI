@@ -1,6 +1,6 @@
 import { Moon } from "lucide-react";
 import { useRestDay } from "@/hooks/useRestDay";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface RestDayToggleProps {
   userId: string;
@@ -12,12 +12,10 @@ interface RestDayToggleProps {
  */
 export const RestDayToggle = ({ userId }: RestDayToggleProps) => {
   const { isRestDay, loading, toggleRestDay } = useRestDay(userId);
-  const { toast } = useToast();
 
   const handleClick = async () => {
     await toggleRestDay();
-    toast({
-      title: isRestDay ? "Rest day removed" : "Today is a rest day",
+    toast(isRestDay ? "Rest day removed" : "Today is a rest day", {
       description: isRestDay
         ? "Your streak now expects activity today."
         : "Your streaks won't break today. Recover well.",

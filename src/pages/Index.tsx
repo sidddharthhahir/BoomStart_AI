@@ -4,7 +4,7 @@ import { Hero } from "@/components/Hero";
 import { OnboardingForm, OnboardingData } from "@/components/OnboardingForm";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 type ViewState = "hero" | "onboarding" | "generating";
@@ -14,7 +14,7 @@ const Index = () => {
   const { user, isLoading: authLoading } = useAuth();
   const [view, setView] = useState<ViewState>("hero");
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  
 
   useEffect(() => {
     const checkProfile = async () => {
@@ -84,8 +84,7 @@ const Index = () => {
 
       if (planError) throw planError;
 
-      toast({
-        title: "Your plan is ready!",
+      toast.success("Your plan is ready!", {
         description: "AI has created a personalized fitness plan just for you.",
       });
 
@@ -94,9 +93,7 @@ const Index = () => {
     } catch (error: any) {
       setIsLoading(false);
       setView("onboarding");
-      toast({
-        variant: "destructive",
-        title: "Error creating plan",
+      toast.error("Error creating plan", {
         description: error.message || "Failed to generate your fitness plan. Please try again.",
       });
     }

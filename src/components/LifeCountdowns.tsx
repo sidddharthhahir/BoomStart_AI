@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Timer, Plus, Pencil, Trash2, PartyPopper, Clock, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { format, differenceInSeconds, addYears, setYear } from "date-fns";
 
 interface Countdown {
@@ -118,10 +118,10 @@ const LifeCountdowns = () => {
       queryClient.invalidateQueries({ queryKey: ["active-countdown"] });
       resetForm();
       setIsAddOpen(false);
-      toast({ title: "Countdown created!", description: "Your countdown is now active." });
+      toast.success("Countdown created!", { description: "Your countdown is now active." });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to create countdown.", variant: "destructive" });
+      toast.error("Error", { description: "Failed to create countdown." });
     },
   });
 
@@ -143,7 +143,7 @@ const LifeCountdowns = () => {
       queryClient.invalidateQueries({ queryKey: ["active-countdown"] });
       resetForm();
       setEditingCountdown(null);
-      toast({ title: "Countdown updated!" });
+      toast.success("Countdown updated!");
     },
   });
 
@@ -157,7 +157,7 @@ const LifeCountdowns = () => {
       queryClient.invalidateQueries({ queryKey: ["all-countdowns"] });
       queryClient.invalidateQueries({ queryKey: ["active-countdown"] });
       queryClient.invalidateQueries({ queryKey: ["focus-countdown"] });
-      toast({ title: "Countdown deleted" });
+      toast.success("Countdown deleted");
     },
   });
 
@@ -180,7 +180,7 @@ const LifeCountdowns = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-countdowns"] });
       queryClient.invalidateQueries({ queryKey: ["focus-countdown"] });
-      toast({ title: "Countdown pinned ⭐" });
+      toast.success("Countdown pinned ⭐");
     },
   });
 
@@ -195,7 +195,7 @@ const LifeCountdowns = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-countdowns"] });
       queryClient.invalidateQueries({ queryKey: ["focus-countdown"] });
-      toast({ title: "Countdown unpinned" });
+      toast.success("Countdown unpinned");
     },
   });
 
@@ -268,7 +268,7 @@ const LifeCountdowns = () => {
 
   const handleSubmit = () => {
     if (!formTitle.trim() || !formDateTime) {
-      toast({ title: "Please fill in all fields", variant: "destructive" });
+      toast.error("Please fill in all fields");
       return;
     }
 
