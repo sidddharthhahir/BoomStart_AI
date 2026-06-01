@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { TrendingUp, Calendar, Scale, Loader2 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -19,8 +19,6 @@ export const ProgressTracker = ({ userId }: ProgressTrackerProps) => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [insights, setInsights] = useState<any>(null);
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false);
-  const { toast } = useToast();
-
   useEffect(() => {
     loadWeightHistory();
     loadLatestInsights();
@@ -76,19 +74,12 @@ export const ProgressTracker = ({ userId }: ProgressTrackerProps) => {
 
       if (error) throw error;
 
-      toast({
-        title: "Weight logged!",
-        description: "Your progress has been recorded.",
-      });
+      toast.success("Weight logged!", { description: "Your progress has been recorded." });
 
       setWeight("");
       loadWeightHistory();
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error logging weight",
-        description: error.message,
-      });
+      toast.error("Error logging weight", { description: error.message });
     } finally {
       setIsLogging(false);
     }
@@ -106,16 +97,9 @@ export const ProgressTracker = ({ userId }: ProgressTrackerProps) => {
       if (error) throw error;
 
       setInsights(data.insights);
-      toast({
-        title: "Insights generated!",
-        description: "Your weekly progress analysis is ready.",
-      });
+      toast.success("Insights generated!", { description: "Your weekly progress analysis is ready." });
     } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error generating insights",
-        description: error.message || "Failed to generate insights. Try again later.",
-      });
+      toast.error("Error generating insights", { description: error.message });
     } finally {
       setIsGeneratingInsights(false);
     }

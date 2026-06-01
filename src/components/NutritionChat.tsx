@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { OnboardingData } from "./OnboardingForm";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { 
   Send, Bot, User, Loader2, Sparkles, Utensils, Clock, Flame, Beef, 
   Droplets, TrendingUp, AlertCircle, Lightbulb, Apple, Pill, RefreshCw,
@@ -680,8 +680,6 @@ export const NutritionChat = ({ userData }: NutritionChatProps) => {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -715,11 +713,7 @@ export const NutritionChat = ({ userData }: NutritionChatProps) => {
     } catch (error: unknown) {
       console.error("Error sending message:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to get response. Please try again.";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error("Error", { description: errorMessage });
     } finally {
       setIsLoading(false);
     }

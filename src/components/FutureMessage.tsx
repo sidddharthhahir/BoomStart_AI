@@ -7,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { format, differenceInDays, isAfter, isBefore, startOfDay, addDays } from "date-fns";
 import { 
   Mail, Lock, Unlock, Clock, Heart, Brain, Flame, 
@@ -60,8 +60,6 @@ export const FutureMessage = ({
   const [tone, setTone] = useState("encouragement");
   const [showNewMessageDialog, setShowNewMessageDialog] = useState(false);
   const [viewingMessage, setViewingMessage] = useState<FutureMessageData | null>(null);
-  const { toast } = useToast();
-
   useEffect(() => {
     fetchMessages();
   }, [userId]);
@@ -155,11 +153,7 @@ export const FutureMessage = ({
       fetchMessages();
     } catch (error) {
       console.error("Error saving message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your message",
-        variant: "destructive",
-      });
+      toast.error("Error", { description: "Failed to save your message" });
     } finally {
       setIsSaving(false);
     }
@@ -177,10 +171,7 @@ export const FutureMessage = ({
       setViewingMessage(null);
       fetchMessages();
 
-      toast({
-        title: "Reflection saved 💜",
-        description: "Thank you for sharing how you feel",
-      });
+      toast.success("Reflection saved 💜", { description: "Thank you for sharing how you feel" });
     } catch (error) {
       console.error("Error saving reflection:", error);
     }
