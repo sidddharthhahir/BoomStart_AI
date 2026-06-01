@@ -3,9 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { OnboardingData } from "./OnboardingForm";
 import { supabase } from "@/integrations/supabase/client";
-import { Dumbbell, Loader2, Info, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
-import { ExerciseTutorDialog } from "./ExerciseTutorDialog";
-import { useToast } from "@/hooks/use-toast";
+import { Dumbbell, Loader2, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { toast } from "sonner";
 
 interface WorkoutPlanProps {
   userData: OnboardingData;
@@ -119,7 +118,6 @@ export const WorkoutPlan = ({ userData, userId }: WorkoutPlanProps) => {
   const [weeklyWorkouts, setWeeklyWorkouts] = useState<WeeklyWorkouts | null>(null);
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay());
   const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadWorkoutPlan();
