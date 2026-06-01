@@ -3,8 +3,9 @@ import { useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { OnboardingData } from "@/components/OnboardingForm";
 
 // Pages
@@ -13,16 +14,11 @@ import WorkoutsPage from "@/pages/Workouts";
 import NutritionPage from "@/pages/Nutrition";
 import ProgressPage from "@/pages/Progress";
 import PhotosPage from "@/pages/Photos";
-import AccountabilityPage from "@/pages/Accountability";
-import CommitmentsPage from "@/pages/Commitments";
 import ProfilePage from "@/pages/Profile";
-import GitaPage from "@/pages/Gita";
-import ChallengesPage from "@/pages/Challenges";
 
 export const AppRoutes = () => {
   const navigate = useNavigate();
   const { user, isLoading: authLoading, signOut } = useAuth();
-  const { toast } = useToast();
   const [userData, setUserData] = useState<OnboardingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,7 +52,6 @@ export const AppRoutes = () => {
             workoutDaysPerWeek: profile.workout_days_per_week || 4,
           });
         } else {
-          // No profile, redirect to onboarding
           navigate("/");
         }
       } catch (error) {
@@ -73,23 +68,30 @@ export const AppRoutes = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    toast({
-      title: "Signed out",
-      description: "You have been signed out successfully.",
-    });
+    toast.success("Signed out");
     navigate("/");
   };
 
-  // Redirect to auth if not logged in
   if (!authLoading && !user) {
     return <Navigate to="/auth" replace />;
   }
 
-  if (authLoading || isLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <MainLayout onSignOut={handleSignOut}>
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+      </MainLayout>
     );
   }
 
@@ -101,46 +103,12 @@ export const AppRoutes = () => {
     <MainLayout onSignOut={handleSignOut}>
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route
-          path="/dashboard"
-          element={<DashboardPage userData={userData} userId={user!.id} />}
-        />
-        <Route
-          path="/workouts"
-          element={<WorkoutsPage userData={userData} userId={user!.id} />}
-        />
-        <Route
-          path="/nutrition"
-          element={<NutritionPage userData={userData} userId={user!.id} />}
-        />
-        <Route
-          path="/progress"
-          element={<ProgressPage userId={user!.id} />}
-        />
-        <Route
-          path="/photos"
-          element={<PhotosPage userId={user!.id} />}
-        />
-        <Route
-          path="/accountability"
-          element={<AccountabilityPage userId={user!.id} />}
-        />
-        <Route
-          path="/commitments"
-          element={<CommitmentsPage userId={user!.id} />}
-        />
-        <Route
-          path="/profile"
-          element={<ProfilePage userId={user!.id} />}
-        />
-        <Route
-          path="/gita"
-          element={<GitaPage userId={user!.id} />}
-        />
-        <Route
-          path="/challenges"
-          element={<ChallengesPage userId={user!.id} />}
-        />
+        <Route path="/dashboard" element={<DashboardPage userData={userData} userId={user!.id} />} />
+        <Route path="/workouts" element={<WorkoutsPage userData={userData} userId={user!.id} />} />
+        <Route path="/nutrition" element={<NutritionPage userData={userData} userId={user!.id} />} />
+        <Route path="/progress" element={<ProgressPage userId={user!.id} />} />
+        <Route path="/photos" element={<PhotosPage userId={user!.id} />} />
+        <Route path="/profile" element={<ProfilePage userId={user!.id} />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </MainLayout>
