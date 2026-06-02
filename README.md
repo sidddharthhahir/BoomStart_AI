@@ -1,148 +1,66 @@
-# BoomStartAI
+# BoomStart
 
-Your daily fitness, mindfulness, and lifestyle companion — AI-powered workouts, nutrition, habits, reflection, and accountability in one clean dashboard.
+A focused fitness companion — AI workouts, nutrition tracking, body measurements, and daily habits in one clean dashboard.
 
----
-
-LIVE/PRODUCTION: https://boomstart.lovable.app/dashboard
-
-## ✨ Features
-
-### 🧭 Daily Focus
-- **Today's Focus** panel — next countdown, remaining calories/protein/water at a glance
-- Quick daily check-in designed for speed
-- Collapsible dashboard sections (Daily Essentials, Countdowns, Stats & Progress, Evening & Reflection)
-
-### 🏋️ Workouts
-- **AI Workout Plans** personalized by goal, experience, body profile
-- **Workout Logger** with sets, reps, weights, and editable history
-- **Exercise Form Checker** — upload photos for AI form feedback
-- **Exercise Tutor** — visual guides with cues and safety tips
-
-### 🍽️ Nutrition
-- **Meal Logging** via natural language or photo analysis
-- **AI Nutrition Coach** chat
-- **Macro Tracking** (calories, protein, daily summaries)
-- **AI Diet Plan** generation
-
-### 💧 Health & Habits
-- **Water Tracking** with daily goals
-- **Sleep Tracking** + AI sleep analysis
-- **Dream Journal** with AI interpretation
-- **Tomorrow Planning** & **Future Messages** to your future self
-
-### ⏳ Countdowns & Motivation
-- **Life & Workout Countdowns** with progress bars
-- **Achievements, XP & Streaks**
-- **Vision Board** & **Commitment Goals**
-
-### 📸 Photos & Progress
-- **Weight Tracking** with trend charts
-- **AI Weekly Insights**
-- **Gym Check-ins** (photo-verified)
-- **Photo Timeline & Compare**
-
-### 👥 Accountability
-- **Buddy System** — invite friends, share weekly stats and streaks
-
-### 📿 Bhagavad Gita (invite-only)
-- Daily verse with translation and reflection
-- **Explain Deeper** & **Ask a Question** powered by AI
-- **Personal Journal** for private reflections per verse
-- **Bookmarks & Favorites** for meaningful verses
-- **Chapter Overview Map** across all 18 chapters
-- **Reading Streaks** (current & longest)
-- **Dashboard widget** for daily verse + progress
-- **Bilingual UI + AI content** — switch between English and हिन्दी; verse meaning, context, deeper understanding, reflections and Q&A all render in the chosen language
-- Per-user access control — only granted users see it
-
-### 📱 PWA & Branding
-- Installable as a home-screen app (manifest, icons, theme color)
-- BoomStartAI favicon, OG image, and SEO meta tags
-- **Rest Day toggle** so streaks don't break on planned recovery days
-- Reusable empty-state component for trackers
+**Live:** https://boomstart.lovable.app
 
 ---
 
-## 🔒 Onboarding
+## Features
 
-New users complete a mandatory onboarding form (weight, height, age, gender, goal, experience, dietary preference, activity level, workout days/week). All AI plans are generated from this profile — no generic templates.
+### Workouts
+- AI-generated workout plans personalized by goal, experience, and body profile
+- Workout logger with sets, reps, weights, and editable history
+- Rest day toggle and weekly schedule (PPL / ABC rotation)
+
+### Nutrition
+- Meal logging via natural language or photo analysis (Gemini 2.5 Flash)
+- AI nutrition coach chat
+- Calorie + protein tracking with daily targets
+- AI-generated diet plan
+
+### Health & Progress
+- Water tracking with daily goals
+- Body measurements tracker (weight, waist, chest, arms, etc.)
+- Weight log + progress charts
+- Gym photo check-ins with streak tracking
+- Weekly AI insights
+
+### Other
+- Future messages, vision board, tomorrow list, life countdowns
+- Public profile sharing (`/u/:username`)
+- Onboarding flow with calculated TDEE & macros
 
 ---
 
-## 🖥️ Architecture
+## Tech Stack
 
-| Layer | Tech |
-|-------|------|
-| Frontend | React 18, TypeScript 5, Vite 5 |
-| Styling | Tailwind CSS 3, shadcn/ui |
-| Backend | Lovable Cloud (Auth, Database, Edge Functions, Storage) |
-| State | React Query, React Router 6 |
-| AI | Edge Functions calling Lovable AI Gateway (Gemini / GPT models) |
+- **Frontend:** Vite, React 18, TypeScript, Tailwind CSS, shadcn-ui
+- **State:** React Query, React Router
+- **Backend:** Lovable Cloud (Supabase) — Postgres + RLS, Auth, Storage, Edge Functions
+- **AI:** Lovable AI Gateway (default: `google/gemini-2.5-flash`)
+- **Notifications:** Sonner (toasts)
 
-### Key Patterns
-- Multi-page layout: `MainLayout` → `DesktopNav` + `MobileNav`
-- Collapsible dashboard sections
-- **RLS everywhere** — all tables protected with row-level security
-- Role-based access via `user_roles` table + security-definer `has_role()`
-- Glassmorphism UI with dark/light theme toggle
-- Mobile-first responsive design with bottom nav
+### Edge Functions
+All edge functions use the shared LLM helper at `supabase/functions/_shared/llm-config.ts` for provider-agnostic AI calls.
+
+- `generate-fitness-plan` — workout + diet plan
+- `adjust-plan` — adapt plan to missed days or low gains
+- `parse-meal` / `analyze-meal-photo` — log meals from text or image
+- `nutrition-ai` — coaching chat
+- `generate-weekly-insights` — Sunday recap
 
 ---
 
-## 🚀 Getting Started
+## Development
 
 ```bash
-npm install
-npm run dev
+bun install
+bun dev
 ```
 
-Visit `http://localhost:5173`
+Environment is auto-configured via Lovable Cloud — no `.env` setup needed.
 
-Environment variables (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`) are auto-configured via Lovable Cloud.
+## Security
 
----
-
-## 🔄 User Flow
-
-### First Time
-1. Land on hero → **Start Your Journey**
-2. Sign up with email/password
-3. Complete onboarding
-4. AI generates personalized workout + diet plans
-5. Redirected to dashboard
-
-### Daily Use
-1. Check **Today's Focus**
-2. Log workouts, meals, water, sleep
-3. Track streaks, countdowns, commitments
-4. Reflect with Gita verse + journal (if enabled)
-5. Review AI insights
-
----
-
-## 📂 Project Structure
-
-```
-src/
-├── pages/           # Route pages (Dashboard, Workouts, Nutrition, Gita, etc.)
-├── components/      # Feature components
-│   ├── dashboard/   # Dashboard cards & charts
-│   ├── gita/        # Gita widgets, chapter map, journal, bookmarks
-│   ├── layout/      # MainLayout, DesktopNav, MobileNav
-│   └── ui/          # shadcn/ui primitives
-├── hooks/           # Custom hooks (auth, stats, gita access, etc.)
-├── lib/             # Utilities & validation schemas
-├── routes/          # AppRoutes with auth guard
-└── integrations/    # Supabase client & types
-
-supabase/
-├── functions/       # Edge functions (AI plan generation, gita-verse, etc.)
-└── config.toml      # Project configuration
-```
-
----
-
-## 📄 License
-
-MIT
+All user tables use Row-Level Security scoped to `auth.uid()`. Storage buckets (`checkins`, `meal-photos`) are private; access via signed URLs only. See `mem://security/*` notes for full policy.
