@@ -141,8 +141,7 @@ export const FutureMessage = ({
 
       if (error) throw error;
 
-      toast({
-        title: "Message locked ✉️",
+      toast.success("Message locked ✉️", {
         description: `Your message will unlock on ${format(unlockDate, "MMM d, yyyy")}`,
       });
 
