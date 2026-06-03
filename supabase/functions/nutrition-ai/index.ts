@@ -96,6 +96,27 @@ serve(async (req) => {
   }
 
   try {
+    // Auth check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    const supabaseAuth = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { message, userData, conversationHistory = [] } = await req.json();
 
     if (!message || typeof message !== 'string') {
@@ -130,13 +151,21 @@ Calculate targets based on this profile.
 `;
     }
 
+    const allowedRoles = new Set(['user', 'assistant']);
+    const safeHistory = Array.isArray(conversationHistory)
+      ? conversationHistory
+          .slice(-6)
+          .filter((msg: any) => msg && allowedRoles.has(msg.role) && typeof msg.content === 'string')
+          .map((msg: any) => ({
+            role: msg.role,
+            content: String(msg.content).slice(0, 2000),
+          }))
+      : [];
+
     const messages = [
       { role: 'system', content: NUTRITION_SYSTEM_PROMPT + userContext },
-      ...conversationHistory.slice(-6).map((msg: any) => ({
-        role: msg.role,
-        content: msg.content
-      })),
-      { role: 'user', content: message }
+      ...safeHistory,
+      { role: 'user', content: String(message).slice(0, 2000) }
     ];
 
     console.log('Calling Lovable AI for nutrition guidance...');
