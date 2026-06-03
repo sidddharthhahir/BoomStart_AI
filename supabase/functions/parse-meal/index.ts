@@ -313,9 +313,7 @@ Parse the food items above and estimate their nutritional content. Return ONLY t
     if (saveError) {
       console.error('Error saving meal:', saveError);
       return new Response(JSON.stringify({
-        error: saveError.message || 'Failed to save meal log',
-        code: (saveError as any).code,
-        details: (saveError as any).details,
+        error: 'Failed to save meal log. Please try again.',
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
