@@ -43,7 +43,7 @@ serve(async (req) => {
       if (context.attendance) safeContext.attendance = Number(context.attendance) || null;
     }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const LOVABLE_API_KEY = Deno.env.get('LLM_API_KEY') || Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
