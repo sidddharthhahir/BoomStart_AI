@@ -921,6 +921,15 @@ export type Database = {
           inviter_id: string
         }[]
       }
+      lookup_challenge_by_code: {
+        Args: { p_invite_code: string }
+        Returns: {
+          description: string
+          id: string
+          name: string
+          owner_id: string
+        }[]
+      }
     }
     Enums: {
       commitment_type:
