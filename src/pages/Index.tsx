@@ -14,7 +14,6 @@ const Index = () => {
   const { user, isLoading: authLoading } = useAuth();
   const [view, setView] = useState<ViewState>("hero");
   const [isLoading, setIsLoading] = useState(false);
-  
 
   useEffect(() => {
     const checkProfile = async () => {
@@ -24,9 +23,7 @@ const Index = () => {
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle();
-
         if (profile) {
-          // User has profile, redirect to dashboard with proper navigation
           navigate("/dashboard");
         } else {
           setView("onboarding");
@@ -35,7 +32,6 @@ const Index = () => {
         setView("hero");
       }
     };
-
     if (!authLoading) {
       checkProfile();
     }
@@ -51,26 +47,41 @@ const Index = () => {
 
   const handleOnboardingSubmit = async (data: OnboardingData) => {
     if (!user) return;
-    
+
     setIsLoading(true);
     setView("generating");
 
     try {
-      // Save profile
-      const { error: profileError } = await supabase
+      const profileData = {
+        user_id: user.id,
+        weight: data.weight,
+        height: data.height,
+        age: data.age,
+        gender: data.gender,
+        goal: data.goal,
+        experience: data.experience,
+        dietary_preference: data.dietaryPreference,
+        activity_level: data.activityLevel,
+        workout_days_per_week: data.workoutDaysPerWeek,
+      };
+
+      // Check if profile already exists
+      const { data: existing, error: fetchError } = await supabase
         .from('profiles')
-        .upsert({
-          user_id: user.id,
-          weight: data.weight,
-          height: data.height,
-          age: data.age,
-          gender: data.gender,
-          goal: data.goal,
-          experience: data.experience,
-          dietary_preference: data.dietaryPreference,
-          activity_level: data.activityLevel,
-          workout_days_per_week: data.workoutDaysPerWeek,
-        });
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (fetchError) throw fetchError;
+
+      const { error: profileError } = existing
+        ? await supabase
+            .from('profiles')
+            .update(profileData)
+            .eq('user_id', user.id)
+        : await supabase
+            .from('profiles')
+            .insert(profileData);
 
       if (profileError) throw profileError;
 
@@ -88,8 +99,8 @@ const Index = () => {
         description: "AI has created a personalized fitness plan just for you.",
       });
 
-      // Redirect to dashboard with proper navigation
       navigate("/dashboard");
+
     } catch (error: any) {
       setIsLoading(false);
       setView("onboarding");
@@ -115,8 +126,8 @@ const Index = () => {
     <>
       {view === "hero" && <Hero onGetStarted={handleGetStarted} />}
       {view === "onboarding" && user && (
-        <OnboardingForm 
-          onSubmit={handleOnboardingSubmit} 
+        <OnboardingForm
+          onSubmit={handleOnboardingSubmit}
           onBack={handleBack}
           isLoading={isLoading}
         />
