@@ -1,0 +1,2 @@
+ALTER TABLE public.fitness_plans DROP CONSTRAINT fitness_plans_plan_type_check;
+ALTER TABLE public.fitness_plans ADD CONSTRAINT fitness_plans_plan_type_check CHECK (plan_type = ANY (ARRAY['diet'::text, 'workout'::text, 'both'::text, 'weekly'::text]));
