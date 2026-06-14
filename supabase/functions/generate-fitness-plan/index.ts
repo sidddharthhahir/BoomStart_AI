@@ -145,7 +145,17 @@ WORKOUT SCHEDULE LOGIC:
 Create a schedule for exactly ${sanitizedData.workoutDaysPerWeek} training days per week + rest days.
 Experience level: ${sanitizedData.experience}
 
-Each workout day must include: 5-7 exercises with sets/reps/rest appropriate for ${sanitizedData.experience} level.
+${sanitizedData.workoutDaysPerWeek === 5 ? `MANDATORY SPLIT for 5 days — use a PPLUL structure on these exact days:
+- Sunday (day 0): LOWER — make this the heaviest lower body session of the week
+- Monday (day 1): PUSH (chest, shoulders, triceps)
+- Tuesday (day 2): PULL (back, biceps, rear delts)
+- Wednesday (day 3): LEGS (quads, hamstrings, calves)
+- Thursday (day 4): UPPER (balanced chest + back + shoulders + arms)
+- Friday (day 5): REST
+- Saturday (day 6): REST
+Generate 5–7 exercises per workout day with sets, reps, and rest times suited to the user's experience level and muscle-building goal.` : `Distribute the ${sanitizedData.workoutDaysPerWeek} training days across the week with appropriate rest days.
+Each workout day must include 5-7 exercises with sets/reps/rest appropriate for ${sanitizedData.experience} level.`}
+
 Rest days should be marked clearly.
 
 DIET LOGIC:
