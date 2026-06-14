@@ -1,0 +1,1075 @@
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
+  public: {
+    Tables: {
+      body_measurements: {
+        Row: {
+          chest_cm: number | null
+          created_at: string
+          hips_cm: number | null
+          id: string
+          left_arm_cm: number | null
+          left_thigh_cm: number | null
+          log_date: string
+          neck_cm: number | null
+          notes: string | null
+          right_arm_cm: number | null
+          right_thigh_cm: number | null
+          user_id: string
+          waist_cm: number | null
+        }
+        Insert: {
+          chest_cm?: number | null
+          created_at?: string
+          hips_cm?: number | null
+          id?: string
+          left_arm_cm?: number | null
+          left_thigh_cm?: number | null
+          log_date?: string
+          neck_cm?: number | null
+          notes?: string | null
+          right_arm_cm?: number | null
+          right_thigh_cm?: number | null
+          user_id: string
+          waist_cm?: number | null
+        }
+        Update: {
+          chest_cm?: number | null
+          created_at?: string
+          hips_cm?: number | null
+          id?: string
+          left_arm_cm?: number | null
+          left_thigh_cm?: number | null
+          log_date?: string
+          neck_cm?: number | null
+          notes?: string | null
+          right_arm_cm?: number | null
+          right_thigh_cm?: number | null
+          user_id?: string
+          waist_cm?: number | null
+        }
+        Relationships: []
+      }
+      buddies: {
+        Row: {
+          buddy_user_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          buddy_user_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          buddy_user_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      buddy_invites: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          invite_code: string
+          invitee_id: string | null
+          inviter_id: string
+          status: Database["public"]["Enums"]["invite_status"]
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invite_code: string
+          invitee_id?: string | null
+          inviter_id: string
+          status?: Database["public"]["Enums"]["invite_status"]
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          invite_code?: string
+          invitee_id?: string | null
+          inviter_id?: string
+          status?: Database["public"]["Enums"]["invite_status"]
+        }
+        Relationships: []
+      }
+      challenge_checkins: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          day_date: string
+          id: string
+          note: string | null
+          user_id: string
+          value: number
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          day_date?: string
+          id?: string
+          note?: string | null
+          user_id: string
+          value?: number
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          day_date?: string
+          id?: string
+          note?: string | null
+          user_id?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_checkins_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "group_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_members: {
+        Row: {
+          challenge_id: string
+          display_name: string | null
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          display_name?: string | null
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          display_name?: string | null
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_members_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "group_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commitments: {
+        Row: {
+          created_at: string
+          duration_weeks: number
+          end_date: string
+          id: string
+          is_active: boolean
+          start_date: string
+          target_value: number
+          type: Database["public"]["Enums"]["commitment_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_weeks: number
+          end_date: string
+          id?: string
+          is_active?: boolean
+          start_date: string
+          target_value: number
+          type: Database["public"]["Enums"]["commitment_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_weeks?: number
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          start_date?: string
+          target_value?: number
+          type?: Database["public"]["Enums"]["commitment_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      countdowns: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          is_pinned: boolean
+          is_recurring: boolean
+          status: string
+          target_time: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_recurring?: boolean
+          status?: string
+          target_time: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          is_pinned?: boolean
+          is_recurring?: boolean
+          status?: string
+          target_time?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      dream_logs: {
+        Row: {
+          ai_interpretation: string | null
+          created_at: string
+          dream_content: string
+          dream_title: string | null
+          id: string
+          log_date: string
+          lucidity_level: number | null
+          mood: string | null
+          themes: string[] | null
+          user_id: string
+        }
+        Insert: {
+          ai_interpretation?: string | null
+          created_at?: string
+          dream_content: string
+          dream_title?: string | null
+          id?: string
+          log_date: string
+          lucidity_level?: number | null
+          mood?: string | null
+          themes?: string[] | null
+          user_id: string
+        }
+        Update: {
+          ai_interpretation?: string | null
+          created_at?: string
+          dream_content?: string
+          dream_title?: string | null
+          id?: string
+          log_date?: string
+          lucidity_level?: number | null
+          mood?: string | null
+          themes?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fitness_plans: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          plan_data: Json
+          plan_type: string
+          target_calories: number | null
+          target_protein: number | null
+          tdee: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          plan_data: Json
+          plan_type: string
+          target_calories?: number | null
+          target_protein?: number | null
+          tdee?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          plan_data?: Json
+          plan_type?: string
+          target_calories?: number | null
+          target_protein?: number | null
+          tdee?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      future_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_unlocked: boolean
+          mood_at_write: string | null
+          reflection_response: string | null
+          sleep_quality_at_write: string | null
+          tone: string | null
+          unlock_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_unlocked?: boolean
+          mood_at_write?: string | null
+          reflection_response?: string | null
+          sleep_quality_at_write?: string | null
+          tone?: string | null
+          unlock_at: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_unlocked?: boolean
+          mood_at_write?: string | null
+          reflection_response?: string | null
+          sleep_quality_at_write?: string | null
+          tone?: string | null
+          unlock_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gita_access: {
+        Row: {
+          granted_at: string
+          granted_by: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      gita_bookmarks: {
+        Row: {
+          chapter: number
+          created_at: string
+          id: string
+          note: string | null
+          user_id: string
+          verse: number
+        }
+        Insert: {
+          chapter: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          user_id: string
+          verse: number
+        }
+        Update: {
+          chapter?: number
+          created_at?: string
+          id?: string
+          note?: string | null
+          user_id?: string
+          verse?: number
+        }
+        Relationships: []
+      }
+      gita_journal: {
+        Row: {
+          chapter: number
+          created_at: string
+          id: string
+          mood: string | null
+          reflection: string
+          updated_at: string
+          user_id: string
+          verse: number
+        }
+        Insert: {
+          chapter: number
+          created_at?: string
+          id?: string
+          mood?: string | null
+          reflection: string
+          updated_at?: string
+          user_id: string
+          verse: number
+        }
+        Update: {
+          chapter?: number
+          created_at?: string
+          id?: string
+          mood?: string | null
+          reflection?: string
+          updated_at?: string
+          user_id?: string
+          verse?: number
+        }
+        Relationships: []
+      }
+      gita_progress: {
+        Row: {
+          created_at: string
+          current_chapter: number
+          current_streak: number
+          current_verse: number
+          id: string
+          last_read_at: string | null
+          longest_streak: number
+          total_verses_read: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_chapter?: number
+          current_streak?: number
+          current_verse?: number
+          id?: string
+          last_read_at?: string | null
+          longest_streak?: number
+          total_verses_read?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_chapter?: number
+          current_streak?: number
+          current_verse?: number
+          id?: string
+          last_read_at?: string | null
+          longest_streak?: number
+          total_verses_read?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      group_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string
+          description: string | null
+          duration_days: number
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+          start_date: string
+          target_per_day: number
+        }
+        Insert: {
+          challenge_type?: string
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          invite_code?: string
+          name: string
+          owner_id: string
+          start_date?: string
+          target_per_day?: number
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          invite_code?: string
+          name?: string
+          owner_id?: string
+          start_date?: string
+          target_per_day?: number
+        }
+        Relationships: []
+      }
+      gym_checkins: {
+        Row: {
+          ai_comment: string | null
+          ai_is_gym: boolean | null
+          created_at: string
+          date: string
+          id: string
+          photo_url: string
+          user_id: string
+        }
+        Insert: {
+          ai_comment?: string | null
+          ai_is_gym?: boolean | null
+          created_at?: string
+          date: string
+          id?: string
+          photo_url: string
+          user_id: string
+        }
+        Update: {
+          ai_comment?: string | null
+          ai_is_gym?: boolean | null
+          created_at?: string
+          date?: string
+          id?: string
+          photo_url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      meal_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          items: Json
+          meal_date: string
+          meal_type: string
+          total_calories: number
+          total_protein: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          items: Json
+          meal_date: string
+          meal_type: string
+          total_calories: number
+          total_protein: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          items?: Json
+          meal_date?: string
+          meal_type?: string
+          total_calories?: number
+          total_protein?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          activity_level: string
+          age: number
+          bio: string | null
+          created_at: string | null
+          dietary_preference: string
+          display_name: string | null
+          experience: string
+          gender: string
+          goal: string
+          height: number
+          id: string
+          public_enabled: boolean
+          updated_at: string | null
+          user_id: string
+          username: string | null
+          weight: number
+          workout_days_per_week: number
+        }
+        Insert: {
+          activity_level?: string
+          age: number
+          bio?: string | null
+          created_at?: string | null
+          dietary_preference: string
+          display_name?: string | null
+          experience: string
+          gender: string
+          goal: string
+          height: number
+          id?: string
+          public_enabled?: boolean
+          updated_at?: string | null
+          user_id: string
+          username?: string | null
+          weight: number
+          workout_days_per_week?: number
+        }
+        Update: {
+          activity_level?: string
+          age?: number
+          bio?: string | null
+          created_at?: string | null
+          dietary_preference?: string
+          display_name?: string | null
+          experience?: string
+          gender?: string
+          goal?: string
+          height?: number
+          id?: string
+          public_enabled?: boolean
+          updated_at?: string | null
+          user_id?: string
+          username?: string | null
+          weight?: number
+          workout_days_per_week?: number
+        }
+        Relationships: []
+      }
+      rest_days: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string | null
+          rest_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          rest_date: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          rest_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sleep_logs: {
+        Row: {
+          bed_time: string | null
+          created_at: string
+          id: string
+          log_date: string
+          notes: string | null
+          sleep_hours: number
+          sleep_quality: string | null
+          user_id: string
+          wake_time: string | null
+        }
+        Insert: {
+          bed_time?: string | null
+          created_at?: string
+          id?: string
+          log_date: string
+          notes?: string | null
+          sleep_hours: number
+          sleep_quality?: string | null
+          user_id: string
+          wake_time?: string | null
+        }
+        Update: {
+          bed_time?: string | null
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          sleep_hours?: number
+          sleep_quality?: string | null
+          user_id?: string
+          wake_time?: string | null
+        }
+        Relationships: []
+      }
+      tomorrow_tasks: {
+        Row: {
+          created_at: string
+          id: string
+          mood_context: string | null
+          sleep_quality_context: string | null
+          status: string
+          task_date: string
+          task_text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mood_context?: string | null
+          sleep_quality_context?: string | null
+          status?: string
+          task_date: string
+          task_text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mood_context?: string | null
+          sleep_quality_context?: string | null
+          status?: string
+          task_date?: string
+          task_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      vision_board_items: {
+        Row: {
+          achieved_at: string | null
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_achieved: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          achieved_at?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_achieved?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          achieved_at?: string | null
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_achieved?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      water_logs: {
+        Row: {
+          amount_ml: number
+          created_at: string
+          id: string
+          log_date: string
+          logged_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string
+          id?: string
+          log_date: string
+          logged_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string
+          id?: string
+          log_date?: string
+          logged_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_insights: {
+        Row: {
+          created_at: string | null
+          id: string
+          insights: Json
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          insights: Json
+          user_id: string
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          insights?: Json
+          user_id?: string
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
+      weight_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          log_date: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          log_date: string
+          user_id: string
+          weight: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: []
+      }
+      workout_logs: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          exercises: Json
+          id: string
+          notes: string | null
+          user_id: string
+          workout_date: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          exercises: Json
+          id?: string
+          notes?: string | null
+          user_id: string
+          workout_date: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          exercises?: Json
+          id?: string
+          notes?: string | null
+          user_id?: string
+          workout_date?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      generate_invite_code: { Args: never; Returns: string }
+      get_buddy_weekly_stats: {
+        Args: { target_user_id: string; week_start: string }
+        Returns: {
+          checkins_count: number
+          current_streak: number
+          workouts_count: number
+        }[]
+      }
+      has_gita_access: { Args: { _user_id: string }; Returns: boolean }
+      is_challenge_member: {
+        Args: { _challenge_id: string; _user_id: string }
+        Returns: boolean
+      }
+      lookup_buddy_invite: {
+        Args: { p_invite_code: string }
+        Returns: {
+          expires_at: string
+          id: string
+          inviter_id: string
+        }[]
+      }
+      lookup_challenge_by_code: {
+        Args: { p_invite_code: string }
+        Returns: {
+          description: string
+          id: string
+          name: string
+          owner_id: string
+        }[]
+      }
+    }
+    Enums: {
+      commitment_type:
+        | "workouts_per_week"
+        | "checkins_per_week"
+        | "meals_logged_per_week"
+      invite_status: "pending" | "accepted" | "declined" | "expired"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
+
+export const Constants = {
+  public: {
+    Enums: {
+      commitment_type: [
+        "workouts_per_week",
+        "checkins_per_week",
+        "meals_logged_per_week",
+      ],
+      invite_status: ["pending", "accepted", "declined", "expired"],
+    },
+  },
+} as const

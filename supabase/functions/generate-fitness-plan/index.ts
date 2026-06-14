@@ -1,0 +1,319 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+// Validation bounds for user data
+const VALIDATION = {
+  weight: { min: 20, max: 500 },
+  height: { min: 50, max: 300 },
+  age: { min: 13, max: 120 },
+  validGenders: ['male', 'female', 'other'],
+  validGoals: ['bulk', 'cut', 'maintain'],
+  validExperience: ['beginner', 'intermediate', 'advanced'],
+  validActivityLevels: ['sedentary', 'lightly_active', 'moderately_active', 'very_active', 'extra_active'],
+  workoutDays: { min: 2, max: 6 },
+};
+
+// Validate and sanitize user data
+function validateUserData(userData: any): { valid: boolean; error?: string; sanitized?: any } {
+  if (!userData || typeof userData !== 'object') {
+    return { valid: false, error: 'User data is required' };
+  }
+
+  const { weight, height, age, gender, goal, experience, dietaryPreference, activityLevel, workoutDaysPerWeek } = userData;
+
+  if (typeof weight !== 'number' || weight < VALIDATION.weight.min || weight > VALIDATION.weight.max) {
+    return { valid: false, error: `Weight must be between ${VALIDATION.weight.min} and ${VALIDATION.weight.max}kg` };
+  }
+
+  if (typeof height !== 'number' || height < VALIDATION.height.min || height > VALIDATION.height.max) {
+    return { valid: false, error: `Height must be between ${VALIDATION.height.min} and ${VALIDATION.height.max}cm` };
+  }
+
+  if (typeof age !== 'number' || !Number.isInteger(age) || age < VALIDATION.age.min || age > VALIDATION.age.max) {
+    return { valid: false, error: `Age must be between ${VALIDATION.age.min} and ${VALIDATION.age.max}` };
+  }
+
+  if (!VALIDATION.validGenders.includes(gender)) {
+    return { valid: false, error: 'Invalid gender value' };
+  }
+
+  if (!VALIDATION.validGoals.includes(goal)) {
+    return { valid: false, error: 'Invalid goal value' };
+  }
+
+  if (!VALIDATION.validExperience.includes(experience)) {
+    return { valid: false, error: 'Invalid experience level' };
+  }
+
+  if (typeof dietaryPreference !== 'string' || dietaryPreference.length === 0 || dietaryPreference.length > 50) {
+    return { valid: false, error: 'Invalid dietary preference' };
+  }
+
+  const validatedActivityLevel = VALIDATION.validActivityLevels.includes(activityLevel) ? activityLevel : 'moderately_active';
+  const validatedWorkoutDays = typeof workoutDaysPerWeek === 'number' && workoutDaysPerWeek >= VALIDATION.workoutDays.min && workoutDaysPerWeek <= VALIDATION.workoutDays.max ? workoutDaysPerWeek : 4;
+
+  return {
+    valid: true,
+    sanitized: {
+      weight: Math.round(weight * 10) / 10,
+      height: Math.round(height),
+      age: Math.floor(age),
+      gender,
+      goal,
+      experience,
+      dietaryPreference: dietaryPreference.slice(0, 50),
+      activityLevel: validatedActivityLevel,
+      workoutDaysPerWeek: validatedWorkoutDays,
+    }
+  };
+}
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { userData } = await req.json();
+    
+    // Validate user data server-side
+    const validation = validateUserData(userData);
+    if (!validation.valid) {
+      return new Response(JSON.stringify({ error: validation.error }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    
+    const sanitizedData = validation.sanitized;
+    
+    const LLM_API_KEY = Deno.env.get('LLM_API_KEY') || Deno.env.get('LOVABLE_API_KEY');
+    const LLM_API_URL = Deno.env.get('LLM_API_URL') || 'https://ai.gateway.lovable.dev/v1/chat/completions';
+    const LLM_MODEL = Deno.env.get('LLM_MODEL') || 'google/gemini-2.5-flash';
+
+    if (!LLM_API_KEY) {
+      throw new Error('LLM_API_KEY is not configured');
+    }
+
+    const authHeader = req.headers.get('Authorization');
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader! } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    console.log('Generating fitness plan for user:', user.id);
+
+    const activityMultipliers: Record<string, number> = {
+      sedentary: 1.2,
+      lightly_active: 1.375,
+      moderately_active: 1.55,
+      very_active: 1.725,
+      extra_active: 1.9,
+    };
+    const activityMultiplier = activityMultipliers[sanitizedData.activityLevel] || 1.55;
+
+    const systemPrompt = `You are BoomStartAI, an advanced AI fitness coach + personal trainer + diet coach.
+Your tone: Energetic, supportive, motivating, clear, simple. No medical claims, no extreme dieting.
+
+CALORIE LOGIC (use Mifflin-St Jeor equation):
+- Male BMR = 10 × weight(kg) + 6.25 × height(cm) − 5 × age − 161 + 5
+- Female BMR = 10 × weight(kg) + 6.25 × height(cm) − 5 × age − 161
+- Activity multiplier: ${activityMultiplier} (${sanitizedData.activityLevel})
+- Bulk: TDEE + 300
+- Cut: TDEE - 500
+- Maintain: TDEE
+Show calculation steps.
+
+PROTEIN LOGIC:
+1.6–2.2g × bodyweight (default: 1.8g × bodyweight)
+
+WORKOUT SCHEDULE LOGIC:
+Create a schedule for exactly ${sanitizedData.workoutDaysPerWeek} training days per week + rest days.
+Experience level: ${sanitizedData.experience}
+
+Each workout day must include: 5-7 exercises with sets/reps/rest appropriate for ${sanitizedData.experience} level.
+Rest days should be marked clearly.
+
+DIET LOGIC:
+- Breakfast → high protein
+- Lunch → balanced
+- Dinner → light
+- Snacks → yogurt, tofu, eggs, shakes
+Support: ${sanitizedData.dietaryPreference}
+
+User Stats:
+- Weight: ${sanitizedData.weight}kg
+- Height: ${sanitizedData.height}cm
+- Age: ${sanitizedData.age}
+- Gender: ${sanitizedData.gender}
+- Goal: ${sanitizedData.goal}
+- Experience: ${sanitizedData.experience}
+- Activity Level: ${sanitizedData.activityLevel} (multiplier: ${activityMultiplier})
+- Workout Days/Week: ${sanitizedData.workoutDaysPerWeek}
+- Diet Preference: ${sanitizedData.dietaryPreference}
+
+Return ONLY valid JSON:
+{
+  "calories": {
+    "tdee": number,
+    "target": number,
+    "protein_target": number,
+    "calculation_steps": ["string"]
+  },
+  "diet_plan": {
+    "meals": [
+      {
+        "type": "breakfast|lunch|dinner|snack",
+        "time": "HH:MM",
+        "items": ["string"],
+        "calories": number,
+        "protein": number
+      }
+    ]
+  },
+  "weekly_workouts": {
+    "0": {
+      "day_name": "Sunday",
+      "type": "rest|workout|active_recovery",
+      "focus": "string (e.g., 'Rest Day', 'Push', 'Full Body A')",
+      "exercises": []
+    },
+    "1": {
+      "day_name": "Monday",
+      "type": "workout",
+      "focus": "string",
+      "exercises": [
+        {
+          "name": "string",
+          "sets": number,
+          "reps": "string",
+          "rest_seconds": number,
+          "muscle_group": "string"
+        }
+      ]
+    },
+    "2": { ... },
+    "3": { ... },
+    "4": { ... },
+    "5": { ... },
+    "6": { ... }
+  }
+}`;
+
+    const response = await fetch(LLM_API_URL, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LLM_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: LLM_MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: 'Generate my personalized weekly fitness plan with different workouts for each day.' }
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI API error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again in a moment.' 
+        }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ 
+          error: 'AI credits depleted. Please add credits to continue.' 
+        }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      throw new Error(`AI API error: ${response.status}`);
+    }
+
+    const aiData = await response.json();
+    const planText = aiData.choices[0].message.content;
+    
+    console.log('Raw AI response:', planText);
+    
+    // Extract JSON from markdown code blocks if present
+    let planData;
+    try {
+      const jsonMatch = planText.match(/```(?:json)?\s*(\{[\s\S]*\})\s*```/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : planText;
+      planData = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', parseError);
+      throw new Error('Invalid AI response format');
+    }
+
+    // Deactivate old plans first
+    await supabaseClient
+      .from('fitness_plans')
+      .update({ is_active: false })
+      .eq('user_id', user.id)
+      .eq('is_active', true);
+
+    // Save the plan to database
+    const { data: savedPlan, error: saveError } = await supabaseClient
+      .from('fitness_plans')
+      .insert({
+        user_id: user.id,
+        plan_type: 'weekly',
+        plan_data: planData,
+        target_calories: planData.calories.target,
+        target_protein: planData.calories.protein_target,
+        tdee: planData.calories.tdee,
+        is_active: true
+      })
+      .select()
+      .single();
+
+    if (saveError) {
+      console.error('Error saving plan:', saveError);
+      throw saveError;
+    }
+
+    console.log('Plan saved successfully:', savedPlan.id);
+
+    return new Response(JSON.stringify({ 
+      plan: planData,
+      planId: savedPlan.id 
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+
+  } catch (error) {
+    console.error('Error in generate-fitness-plan:', error);
+    return new Response(JSON.stringify({ 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});
