@@ -1,66 +1,54 @@
 # BoomStart
 
-A focused fitness companion — AI workouts, nutrition tracking, body measurements, and daily habits in one clean dashboard.
+An AI-powered fitness dashboard for workouts, nutrition, and progress tracking.
 
-**Live:** https://boomstart.lovable.app
+## Overview
 
----
+BoomStart helps users plan, track, and improve their fitness journey from one interface. It combines personalized training plans, nutrition intelligence, and habit-based progress monitoring.
 
-## Features
+## Key Features
 
-### Workouts
-- AI-generated workout plans personalized by goal, experience, and body profile
-- Workout logger with sets, reps, weights, and editable history
-- Rest day toggle and weekly schedule (PPL / ABC rotation)
-
-### Nutrition
-- Meal logging via natural language or photo analysis (Gemini 2.5 Flash)
-- AI nutrition coach chat
-- Calorie + protein tracking with daily targets
-- AI-generated diet plan
-
-### Health & Progress
-- Water tracking with daily goals
-- Body measurements tracker (weight, waist, chest, arms, etc.)
-- Weight log + progress charts
-- Gym photo check-ins with streak tracking
-- Weekly AI insights
-
-### Other
-- Future messages, vision board, tomorrow list, life countdowns
-- Public profile sharing (`/u/:username`)
-- Onboarding flow with calculated TDEE & macros
-
----
+- Personalized AI workout and diet planning
+- Workout logging with sets, reps, weights, and schedule rotation
+- Meal tracking from text and photo analysis
+- AI nutrition coaching and weekly fitness insights
+- Water, weight, and body measurement tracking
+- Gym check-ins, streak tracking, and public profile sharing
 
 ## Tech Stack
 
 - **Frontend:** Vite, React 18, TypeScript, Tailwind CSS, shadcn-ui
-- **State:** React Query, React Router
-- **Backend:** Lovable Cloud (Supabase) — Postgres + RLS, Auth, Storage, Edge Functions
-- **AI:** Lovable AI Gateway (default: `google/gemini-2.5-flash`)
-- **Notifications:** Sonner (toasts)
+- **State & Routing:** React Query, React Router
+- **Backend:** Lovable Cloud (Supabase), Postgres, RLS, Auth, Storage, Edge Functions
+- **AI:** Lovable AI Gateway (`google/gemini-2.5-flash` by default)
+- **Notifications:** Sonner
 
-### Edge Functions
-All edge functions use the shared LLM helper at `supabase/functions/_shared/llm-config.ts` for provider-agnostic AI calls.
-
-- `generate-fitness-plan` — workout + diet plan
-- `adjust-plan` — adapt plan to missed days or low gains
-- `parse-meal` / `analyze-meal-photo` — log meals from text or image
-- `nutrition-ai` — coaching chat
-- `generate-weekly-insights` — Sunday recap
-
----
-
-## Development
+## Setup & Run
 
 ```bash
 bun install
 bun dev
 ```
 
-Environment is auto-configured via Lovable Cloud — no `.env` setup needed.
+Environment configuration is handled by Lovable Cloud, so no local `.env` setup is required.
 
-## Security
+## Usage
 
-All user tables use Row-Level Security scoped to `auth.uid()`. Storage buckets (`checkins`, `meal-photos`) are private; access via signed URLs only. See `mem://security/*` notes for full policy.
+1. Complete onboarding to set goals, experience level, and profile metrics.
+2. Generate your workout and nutrition plan.
+3. Log workouts, meals, hydration, and measurements daily.
+4. Review weekly AI insights and adjust your plan as needed.
+
+## Project Structure
+
+- `src/` — frontend application components and pages
+- `supabase/functions/` — backend edge functions
+- `supabase/functions/_shared/llm-config.ts` — shared AI provider configuration
+
+## Contributing
+
+Contributions are welcome. Please open an issue to discuss major changes before submitting a pull request.
+
+## License / Contact
+
+This repository is maintained by the BoomStart team. For collaboration or support, open an issue in this repository.
