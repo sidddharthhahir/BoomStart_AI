@@ -48,8 +48,6 @@ function sanitizeItems(items: unknown): ParsedItem[] {
 }
 
 serve(async (req) => {
-  console.log('analyze-meal-photo function called');
-
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -137,8 +135,6 @@ Return ONLY valid JSON (no markdown, no code blocks):
 
     const userMessage = `Analyze this ${mealType} meal photo and identify all food items with their nutritional estimates. Return ONLY the JSON object.`;
 
-    console.log('Calling AI vision API...');
-
     const response = await fetch(LLM_API_URL, {
       method: 'POST',
       headers: {
@@ -187,8 +183,6 @@ Return ONLY valid JSON (no markdown, no code blocks):
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-
-    console.log('AI vision response:', mealText);
 
     let mealData;
     try {

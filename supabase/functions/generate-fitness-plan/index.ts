@@ -267,9 +267,7 @@ Return ONLY valid JSON:
 
     const aiData = await response.json();
     const planText = aiData.choices[0].message.content;
-    
-    console.log('Raw AI response:', planText);
-    
+
     // Extract JSON from markdown code blocks if present
     let planData;
     try {

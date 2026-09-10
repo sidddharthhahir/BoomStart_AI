@@ -25,7 +25,7 @@ serve(async (req) => {
     const sanitizedReason = reason
       .trim()
       .slice(0, 500)
-      .replace(/[<>{}[\]\\\/]/g, '')
+      .replace(/[<>{}[\]\\/]/g, '')
       .replace(/\s+/g, ' ');
 
     if (!sanitizedReason) {
@@ -38,7 +38,7 @@ serve(async (req) => {
     // Sanitize context object if provided
     const safeContext: Record<string, string | number | null> = {};
     if (context && typeof context === 'object') {
-      if (context.goal) safeContext.goal = String(context.goal).slice(0, 100).replace(/[<>{}[\]\\\/]/g, '');
+      if (context.goal) safeContext.goal = String(context.goal).slice(0, 100).replace(/[<>{}[\]\\/]/g, '');
       if (context.weight) safeContext.weight = Number(context.weight) || null;
       if (context.attendance) safeContext.attendance = Number(context.attendance) || null;
     }
@@ -66,7 +66,7 @@ serve(async (req) => {
       });
     }
 
-    console.log('Adjusting plan for user:', user.id, 'Reason:', sanitizedReason);
+    console.log('Adjusting plan for user:', user.id);
 
     // Get current active plan
     const { data: currentPlan, error: planError } = await supabaseClient

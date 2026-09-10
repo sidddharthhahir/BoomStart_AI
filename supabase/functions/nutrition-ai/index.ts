@@ -170,8 +170,6 @@ Calculate targets based on this profile.
       { role: 'user', content: String(message).slice(0, 2000) }
     ];
 
-    console.log('Calling Lovable AI for nutrition guidance...');
-
     const response = await fetch(LLM_API_URL, {
       method: 'POST',
       headers: {
@@ -208,8 +206,6 @@ Calculate targets based on this profile.
 
     const data = await response.json();
     const aiResponse = data.choices[0].message.content;
-
-    console.log('AI response received successfully');
 
     return new Response(
       JSON.stringify({ response: aiResponse }),

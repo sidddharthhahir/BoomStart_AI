@@ -66,22 +66,17 @@ function sanitizeItems(items: unknown): ParsedItem[] {
 }
 
 serve(async (req) => {
-  console.log('parse-meal function called');
-  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const body = await req.json();
-    console.log('Request body:', JSON.stringify(body));
-    
     const { mealDescription, mealType } = body;
-    
+
     // Server-side validation
     if (!mealDescription || typeof mealDescription !== 'string') {
-      console.log('Validation failed: missing mealDescription');
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         error: 'Meal description is required' 
       }), {
         status: 400,
@@ -149,7 +144,6 @@ serve(async (req) => {
 
     const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
     if (userError || !user) {
-      console.log('Auth error:', userError?.message);
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -192,8 +186,6 @@ ${sanitizedDescription}
 
 Parse the food items above and estimate their nutritional content. Return ONLY the JSON object, no markdown formatting.`;
 
-    console.log('Calling AI API...');
-    
     const response = await fetch(LLM_API_URL, {
       method: 'POST',
       headers: {
@@ -241,8 +233,6 @@ Parse the food items above and estimate their nutritional content. Return ONLY t
     }
 
     const aiData = await response.json();
-    console.log('AI response received');
-    
     const mealText = aiData.choices?.[0]?.message?.content;
     
     if (!mealText) {
@@ -252,8 +242,6 @@ Parse the food items above and estimate their nutritional content. Return ONLY t
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
-    
-    console.log('Raw AI response:', mealText);
     
     let mealData;
     try {

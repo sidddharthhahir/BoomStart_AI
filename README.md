@@ -13,24 +13,25 @@ BoomStart helps users plan, track, and improve their fitness journey from one in
 - Meal tracking from text and photo analysis
 - AI nutrition coaching and weekly fitness insights
 - Water, weight, and body measurement tracking
-- Gym check-ins, streak tracking, and public profile sharing
+- Gym check-ins with photo verification and streak tracking
 
 ## Tech Stack
 
 - **Frontend:** Vite, React 18, TypeScript, Tailwind CSS, shadcn-ui
 - **State & Routing:** React Query, React Router
 - **Backend:** Lovable Cloud (Supabase), Postgres, RLS, Auth, Storage, Edge Functions
-- **AI:** Lovable AI Gateway (`google/gemini-2.5-flash` by default)
+- **AI:** OpenAI-compatible chat completions API — Lovable AI Gateway (`google/gemini-2.5-flash`) by default, swappable via `LLM_API_URL`/`LLM_API_KEY` Supabase secrets
 - **Notifications:** Sonner
 
 ## Setup & Run
 
 ```bash
 bun install
+cp .env.example .env   # fill in your Supabase project URL and anon/publishable key
 bun dev
 ```
 
-Environment configuration is handled by Lovable Cloud, so no local `.env` setup is required.
+The Supabase project itself needs a `LLM_API_KEY` (or `LOVABLE_API_KEY`) secret set for the edge functions to reach an LLM — see [ARCHITECTURE.md](ARCHITECTURE.md#edge-functions).
 
 ## Usage
 
@@ -42,13 +43,13 @@ Environment configuration is handled by Lovable Cloud, so no local `.env` setup 
 ## Project Structure
 
 - `src/` — frontend application components and pages
-- `supabase/functions/` — backend edge functions
-- `supabase/functions/_shared/llm-config.ts` — shared AI provider configuration
+- `supabase/functions/` — backend edge functions (see [ARCHITECTURE.md](ARCHITECTURE.md) for details)
+- `supabase/migrations/` — database schema
 
 ## Contributing
 
 Contributions are welcome. Please open an issue to discuss major changes before submitting a pull request.
 
-## License / Contact
+## Contact
 
-This repository is maintained by the BoomStart team. For collaboration or support, open an issue in this repository.
+Maintained by [Siddharth Ahir](https://github.com/sidddharthhahir). Open an issue for questions or bug reports.
